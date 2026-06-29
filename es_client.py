@@ -11,13 +11,18 @@ Environment variables (all optional, with sensible defaults):
                Local, security ON  (8.x default):  https://localhost:9200
                Local, security OFF:                http://localhost:9200
                Elastic Cloud:                       the endpoint shown on
-                                                     your deployment's
-                                                     "Manage" page, e.g.
+                                                     your deployment's page,
+                                                     e.g.
                                                      https://my-deployment.es.us-east-1.aws.elastic.cloud:443
 
-  ES_USERNAME  Default: elastic
-  ES_PASSWORD  Password for the 'elastic' user. REQUIRED when security is ON
-               (this includes every Elastic Cloud deployment).
+  ES_API_KEY   An Elastic Cloud "encoded" API key (the long base64-looking
+               string Elastic Cloud's connection-details panel gives you).
+               If this is set, it's used instead of ES_USERNAME/ES_PASSWORD.
+               This is the easiest option when using Elastic Cloud.
+
+  ES_USERNAME  Default: elastic. Only used if ES_API_KEY is NOT set.
+  ES_PASSWORD  Password for the 'elastic' user. Only used if ES_API_KEY is
+               NOT set. REQUIRED when security is ON and no API key is used.
   ES_CA_CERT   Path to Elasticsearch's http_ca.crt (recommended with HTTPS
                for a *local* install). Not needed for Elastic Cloud — its
                certificate is already publicly trusted.
@@ -35,6 +40,7 @@ from elasticsearch import Elasticsearch
 
 def get_client() -> Elasticsearch:
     url = os.environ.get("ES_URL", "https://localhost:9200")
+    api_key = os.environ.get("ES_API_KEY")
     username = os.environ.get("ES_USERNAME", "elastic")
     password = os.environ.get("ES_PASSWORD")
     ca_cert = os.environ.get("ES_CA_CERT")
@@ -42,8 +48,11 @@ def get_client() -> Elasticsearch:
     kwargs = {}
 
     # Authentication — needed whenever security is enabled (always true for
-    # Elastic Cloud, optional for a local install).
-    if password:
+    # Elastic Cloud, optional for a local install). Prefer an API key if one
+    # is provided; otherwise fall back to username/password.
+    if api_key:
+        kwargs["api_key"] = api_key
+    elif password:
         kwargs["basic_auth"] = (username, password)
 
     # TLS handling for HTTPS endpoints.
