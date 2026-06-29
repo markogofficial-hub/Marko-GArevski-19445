@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Companies — Sample Stock Market App{% endblock %}
+{% block content %}
+  <h1>Companies</h1>
+  <p style="color:#6b7280">Counts come from an Elasticsearch <code>terms</code> aggregation.</p>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Symbol</th><th>Sector</th><th>Quarters</th><th>Price records</th></tr>
+    </thead>
+    <tbody>
+      {% for c in companies %}
+      <tr>
+        <td><a href="{{ url_for('company_detail', name=c.name) }}">{{ c.name }}</a></td>
+        <td>{{ c.symbol }}</td>
+        <td>{{ c.sector }}</td>
+        <td>{{ c.quarter_count }}</td>
+        <td>{{ c.record_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

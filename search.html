@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Search — Sample Stock Market App{% endblock %}
+{% block content %}
+  <h1>Search companies</h1>
+  <p style="color:#6b7280">Fuzzy, relevance-ranked full-text search — try a typo like
+    <em>"biotek"</em> or <em>"enrgy"</em>.</p>
+
+  <form class="search" method="get" action="{{ url_for('search') }}">
+    <input type="text" name="q" value="{{ q }}" placeholder="e.g. NovaTech, NVTC, Energy">
+    <button type="submit">Search</button>
+  </form>
+
+  {% if q %}
+    <p>{{ results|length }} result(s) for "<strong>{{ q }}</strong>", best match first</p>
+    {% if results %}
+      <table>
+        <thead>
+          <tr><th>Company</th><th>Symbol</th><th>Sector</th><th>Date</th><th>Close price</th><th>Score</th></tr>
+        </thead>
+        <tbody>
+          {% for r in results %}
+          <tr>
+            <td>{{ r.company }}</td>
+            <td>{{ r.symbol }}</td>
+            <td>{{ r.sector }}</td>
+            <td>{{ r.date }}</td>
+            <td>${{ '%.2f' % r.close_price }}</td>
+            <td class="score">{{ r.score }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  {% endif %}
+{% endblock %}

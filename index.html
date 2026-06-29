@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Home — Sample Stock Market App{% endblock %}
+{% block content %}
+  <h1>📈 Sample Stock Market (Elasticsearch)</h1>
+  <p>A learning app reading from an Elasticsearch index, with Kibana for dashboards.
+     All companies and prices are fictional — this is sample data, not real market data
+     or financial advice.</p>
+
+  <div class="card">
+    <p><span class="pill">{{ stats.records }}</span> price records</p>
+    <p><span class="pill">{{ stats.companies }}</span> companies</p>
+    <p><span class="pill">{{ stats.sectors }}</span> sectors</p>
+  </div>
+
+  <div class="card">
+    <h3>Top sectors <small style="font-weight:400;color:#6b7280">(a terms aggregation)</small></h3>
+    <table>
+      <thead><tr><th>Sector</th><th>Price records</th></tr></thead>
+      <tbody>
+        {% for s in sectors %}
+        <tr><td>{{ s.name }}</td><td>{{ s.count }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p>Try these:</p>
+  <ul>
+    <li><a href="{{ url_for('companies') }}">Browse all companies →</a></li>
+    <li><a href="{{ url_for('search', q='biotek') }}">Fuzzy search "biotek" (a typo for "Biotech") →</a></li>
+    <li><a href="{{ url_for('api_search', q='enrgy') }}">See the JSON search API →</a></li>
+  </ul>
+{% endblock %}

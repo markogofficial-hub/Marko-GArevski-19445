@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ company }} — Sample Stock Market App{% endblock %}
+{% block content %}
+  <p><a href="{{ url_for('companies') }}">← Back to companies</a></p>
+  <h1>{{ company }} <span class="pill">{{ symbol }}</span></h1>
+  <p style="color:#6b7280">Sector: {{ sector }}</p>
+
+  {% for q in quarters %}
+    <div class="card">
+      <h3>{{ q.label }} <span class="pill">{{ q.year }}</span></h3>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Close price</th><th>Volume</th><th>Change</th></tr>
+        </thead>
+        <tbody>
+          {% for r in q.records %}
+          <tr>
+            <td>{{ r.date }}</td>
+            <td>${{ '%.2f' % r.close_price }}</td>
+            <td>{{ '{:,}'.format(r.volume) }}</td>
+            <td class="{{ 'up' if r.change_pct >= 0 else 'down' }}">
+              {{ '%+.1f' % r.change_pct }}%
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>No price records found for this company.</p>
+  {% endfor %}
+{% endblock %}
